@@ -1,0 +1,190 @@
+<h1 class="bigger center section">API</h1>
+
+<p class="center"><a href="https://github.com/feuilles/documentation/blob/master/api.html">Fork On GitHub</a></p>
+
+<ul class="list">
+    <li><a href="#introduction">Introduction</a></li>
+    <li><a href="#general-notes">General notes</a></li>
+    <li><a href="#gain-access-to-the-api">Gain access to the API</a></li>
+    <li><a href="#endpoints">Endpoints</a></li>
+</ul>
+
+<h2 class="section" id="introduction">Introduction</h2>
+
+<p><strong>Note:</strong> The examples below use <a href="https://github.com/feuilles/Feuilles-PHP">Feuilles PHP</a>, a simple PHP class to interact with our API.</p>
+
+<p>Feuilles
+ is an “Api At The Core” type of application, which means that our 
+website consumes its own API. It also means that anyone can send HTTP 
+requests to the same endpoints that we are using to operate our 
+website.</p>
+
+<p>Since Feuilles is a young app, it's 
+very likely that our API will change a lot. The first place where new 
+features will be added is our API. Those features will then “bubble up” 
+to become actual web pages that will allow our users to interact with 
+those new features. The API is also at the forefront of, let's face it, 
+the battle against bugs and issues. It's likely that we will have to fix
+ things and change the way our API receives and sends back 
+data.</p>
+
+<p>We have therefore opened only a few of 
+our endpoints to the world, for now, in order to receive feedback from 
+the developers eager to use Feuilles from remote HTTP locations. That 
+being said, we encourage you to experiment with our API, especially with
+ our <a href="add link...">In-House</a> feature.</p>
+
+<h2 class="section" id="general-notes">General notes</h2>
+
+<ul>
+    <li>Our API is located at https://feuill.es/api/v1.</li>
+    <li>All requests to our endpoints are done over SSL. </li>
+    <li>We only work with UTF-8 encoding.</li>
+  
+  <li><a href="http://oauth.net/2/">OAuth2</a> is used
+ for authenticating all requests sent to our API</li>
+</ul>
+
+<h2 class="section" id="gain-access-to-the-api">Gain access to the API</h2>
+
+<p>Obtaining an access token is pretty straightforward. Our OAuth2 endpoints are:</p>
+
+<ul class="list">
+    <li>
+        <p class="highlight">https://feuill.es/api/v1/oauth2/authorize</p>
+    </li>
+    <li>
+        <p class="highlight">https://feuill.es/api/v1/oauth2/token</p>
+    </li>
+</ul>
+
+<h3>Register an application</h3>
+
+<p>Log
+ in and register an application. You will receive two alpha numeric, 
+meaningless strings, one named the “client id” and the other named the 
+“client secret”. These two strings will be used by our API to 
+authenticate your app.</p>
+
+<h3>The authorization endpoint</h3>
+
+<p>When
+ you want to allow one of your users to connect to us, all you have to 
+do is send the user to our authorization endpoint:</p>
+
+<p
+ 
+class="highlight"><span>https://feuill.es/api/v1/oauth2/authorize?client_id=your_client_client_id&amp;redirect_uri=your_url&amp;response_type=code</span></p>
+
+<p class="alert alert-info">Note: we currently only support <code>code</code> response types.</p>
+
+<p>The
+ user will reach our website and see some information about your 
+application. It will then be possible for the user to grant your app a 
+set of permissions (that can be revoked at any time). The user can then 
+give your application the right to act on his or her behalf, or cancel 
+the whole process. Either way, the user will be redirected to the 
+<code>redirect_uri</code> callback you have 
+provided.</p>
+
+<p>Optionally you may also pass along a
+ <code>state</code> parameter (a random string) that we will
+ attach to our response. You can use this parameter to protect against 
+cross-site request forgery (CSRF).</p>
+
+<h3>If the user hits “authorize”</h3>
+
+<p>Once
+ the request has been authorized, the user will be redirected to the 
+<code>redirect_uri</code>. We will attach a 
+<code>code</code> param to the query string just like 
+this:</p>
+
+<p class="highlight">https://my-super-website.com/?code=1234567890</p>
+
+<p>You can grab that code and exchange it against an <code>access_token</code>:</p>
+
+<pre><code>
+require "Feuilles.php";
+$res = $feuilles->getAccessToken($_GET['code'], $your_client_id, $your_client_secret, $your_redirect_url);
+$res = json_decode($res);
+$access_token = $res->access_token;
+$feuilles->setAccessToken($access_token);
+</code></pre>
+
+<p>Congratulations!
+ You have received a JSON-encoded response and have extracted an 
+<code>access_token</code> from it. Store it in a databse so you don't have to request every time you interact with our API.</p>
+
+<p>You can now use that token to get in touch with our API. Here's a quick example:</p>
+
+<pre><code>
+$res = $feuilles->createDoc(array(
+    "title" => "Api",
+    "body" => "Made with Feuilles PHP"
+));
+</code></pre>
+
+<h3>If the user hits “cancel”</h3>
+
+<p>If
+ the user chooses to cancel the authorization process, we will still 
+redirect to your redirect_uri, but with the following query string: 
+<code>?error=auth</code></pre>
+
+<h2 class="section" id="endpoints">Endpoints</h2>
+
+<h3><code>GET</code> /doc/read</h3>
+
+<p>Read a document</p>
+
+<pre><code>
+$res = $feuilles->readDoc($sha);
+</code></pre>
+
+<h3><code>POST</code> /doc/create</h3>
+
+<p>Create a document</p>
+
+<pre><code>
+$res = $feuilles->createDoc(array(
+    "title" => "I am the title",
+    "body" => "I am the body"
+));
+</code></pre>
+
+<p>You
+ will receive a JSON-encoded string containing a 
+<code>sha</code> used to reference the document (you should 
+save it in your database).</p>
+
+<h3><code>POST</code> /doc/update</h3>
+
+<p>Update a document</p>
+
+<pre><code>
+$res = $feuilles->updateDoc($sha, array(
+    "title" => "New title",
+    "body" => "And a new body",
+    "note" => "I am a note" // optional,
+    "status_slug" => "final"
+));
+</code></pre>
+
+<p><strong>Note:</strong>
+ the <code>status_slug</code> param can be one of the 
+following:  </p>
+
+<ul>
+    <li>draft</li>
+    <li>revising</li>
+    <li>final</li>
+</ul>
+
+<h3><code>POST</code> /doc/delete</h3>
+
+<p>Delete a document</p>
+
+<pre><code>
+$res = $feuilles->deleteDoc($sha);
+</code></pre>
