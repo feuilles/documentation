@@ -6,21 +6,35 @@
 
 <p>You can post to various services directly from Feuilles, like WordpPress and GitHub. That's great. But wouldn't it be great to send documents to your <strong>own</strong> website?</p>
 
-<p>Well, we made it as easy as possible for you to post data<strong>from</strong> Feuilles <strong>to your own website</strong>, just as if <em>your</em> publishing platform, blog, magazine was a regular third-patry application.</p><p>This feature is called “In-House Publishing”, and we're going to tell you how it works rght here, right now.</p>
+<p>Well, we made it as easy as possible for you to post data <strong>from</strong> Feuilles <strong>to your own website</strong>, just as if <em>your</em> publishing platform, blog, magazine was a regular third-patry application.</p>
 
-<h2 class="section">The Gist</h2><p>To empower your website with “In-House publishing”, you will first need to<a href="https://feuill.es/console/applications">register an application on Feuilles</a>. When you create an application on Feuilles, you can specify a “publishing url” for your app: this is the url where Feuilles will send data to.</p><p>For example, if you're working on a document on Feuilles and decide that it's timt to transfer it to your blog, this publishing url is where your document will land (more on the process of sending your docs to that url in a few lines).</p><p>But basically, the idea is that you can work on your texts in Feuilles, collaborate, improve, refine, and send your piece to your website when you're ready to publish, along with a few JSON-encoded information of your choice, if needed.</p>
+<p>This feature is called “In-House Publishing”, and we're going to tell you how it works rght here, right now.</p>
+
+<h2 class="section">The Gist</h2>
+
+<p>To empower your website with “In-House publishing”, you will first need to <a href="https://feuill.es/console/applications">register an application on Feuilles</a>. When you create an application on Feuilles, you can specify a “publishing url” for your app: this is the url where Feuilles will send data to.</p>
+
+<p>For example, if you're working on a document on Feuilles and decide that it's timt to transfer it to your blog, this publishing url is where your document will land (more on the process of sending your docs to that url in a few lines).</p>
+
+<p>But basically, the idea is that you can work on your texts in Feuilles, collaborate, improve, refine, and send your piece to your website when you're ready to publish, along with a few JSON-encoded information of your choice, if needed.</p>
 
 <p>In other words, you can write in Feuilles and publish on your website directly from our platform.</p>
 
 <h2 class="section">The publishing url</h2>
 
-<p>The location of your “publishing url” is totally up to you and you can be specified it in the <a href="https://feuill.es/console/applications">application manager</a>. It could be, for example, <span class="highlight">http://my-super-website/feuilles</span> or<span class="highlight">http://my-super-website/in-house</span>, or even  <span class="highlight">http://my-super-website/s83jfn29sjrh57dw93md</span>. Your call. </p><p>Once you have created an application and added a publishing url to it, well, Feuilles will be ready to send docs to that endpoint. It's that simple.</p><p>Note: your “publishing endpoint” endpoint is never disclosed to our users.</p>
+<p>The location of your “publishing url” is totally up to you and you can be specified it in the <a href="https://feuill.es/console/applications">application manager</a>. It could be, for example, <span class="highlight">http://my-super-website/feuilles</span> or <span class="highlight">http://my-super-website/in-house</span>, or even <span class="highlight">http://my-super-website/s83jfn29sjrh57dw93md</span>. Your call. </p>
+
+<p>Once you have created an application and added a publishing url to it, well, Feuilles will be ready to send docs to that endpoint. It's that simple.</p>
+
+<p>Note: your “publishing endpoint” endpoint is never disclosed to our users.</p>
 
 <h2 class="section">The requests sent to your website</h2>
 
 <p>All requests to your publishing url are <code>POST</code> requests.</p>
 
-<p class="alert alert-info">Note: The<code>User-Agent</code> header will always be “Feuilles In-House” (which you may be interested in, if you're a nerd). If HTTP headers is not your strong suit, no worries. Just keep on reading.</p><p>Feuilles will send to your website acertain amount of post fields, like the title of the doc, its body, its version etc. Here's a simple script that catches all the post fields sent by Feuilles to your publishing url. Each field is detailed below.</p>
+<p class="alert alert-info">Note: The <code>User-Agent</code> header will always be “Feuilles In-House” (which you may be interested in, if you're a nerd). If HTTP headers is not your strong suit, no worries. Just keep on reading.</p>
+
+<p>Feuilles will send to your website acertain amount of post fields, like the title of the doc, its body, its version etc. Here's a simple script that catches all the post fields sent by Feuilles to your publishing url. Each field is detailed below.</p>
 
 <pre><code>
 $sha = $_POST["sha"];
@@ -36,7 +50,13 @@ $custom = $_POST["custom"];
 $hash = $_POST["hash"];
 </code></pre>
 
-<p>So, if you create a publishing url at, say, <span class="highlight">http://my-super-website-com/feuilles</span>, you could use the script above to handle the stuff that Feuilles sends to you (some validation, recording some stuff in your database, the usual).</p><h2 class="section">Nerd alert!</h2><p>Things are about to get a little nerdy just below. At the time of writing, there is no package, WP Plugin, Perch plugin, or any other plugin for that matter, that automates “In-House” publishing for you. </p><p>If you have understood the concept of “In-House” publishing and like it, there is unfortunately currently no way <em>not</em> to get technical. And while the process described below is very easy to understand for a seasoned developer, you might get lost quickly if you have no experience with designing APIs. </p>
+<p>So, if you create a publishing url at, say, <span class="highlight">http://my-super-website-com/feuilles</span>, you could use the script above to handle the stuff that Feuilles sends to you (some validation, recording some stuff in your database, the usual).</p>
+
+<h2 class="section">Nerd alert!</h2>
+
+<p>Things are about to get a little nerdy just below. At the time of writing, there is no package, WP Plugin, Perch plugin, or any other plugin for that matter, that automates “In-House” publishing for you. </p>
+
+<p>If you have understood the concept of “In-House” publishing and like it, there is unfortunately currently no way <em>not</em> to get technical. And while the process described below is very easy to understand for a seasoned developer, you might get lost quickly if you have no experience with designing APIs. </p>
 
 <p>So, if you're a developer and feel like authoring a tool that will help people implement In-House publishing on their website, go ahead and let us know. We'll feature your work.</p>
 
@@ -44,7 +64,7 @@ $hash = $_POST["hash"];
 
 <h3><code>sha</code> (string)</h3>
 
-<p>The<code>sha</code> field is a unique identifier that matches aunique document. If the version of the document changes, the<code>sha</code> will remain the same. To identify the specific version of a doc, use the <code>version</code>field.</p>
+<p>The <code>sha</code> field is a unique identifier that matches aunique document. If the version of the document changes, the <code>sha</code> will remain the same. To identify the specific version of a doc, use the <code>version</code> field.</p>
 
 <h3><code>title</code> (string)</h3>
 
@@ -70,7 +90,7 @@ $hash = $_POST["hash"];
 
 <h3><code>access_token</code> (string)</h3>
 
-<p>The<code>access_token</code> field is the access token given to you when a user authorizes your application to connect to Feuilles. It's very likely that you have this token stored in a database along with a user ID associated to it. Use this access token to identify the Feuilles user sending a request to your application.</p>
+<p>The <code>access_token</code> field is the access token given to you when a user authorizes your application to connect to Feuilles. It's very likely that you have this token stored in a database along with a user ID associated to it. Use this access token to identify the Feuilles user sending a request to your application.</p>
 
 <h3><code>unique_code</code> (string)</h3>
 
@@ -90,11 +110,11 @@ $hash = $_POST["hash"];
 
 <h3><code>hash</code> (string)</h3>
 
-<p>A sha256 hash of <em>all</em> the fields listed above<em>including</em> your client id, client secret and publishing endpoint. The <code>hash</code> field is used to authenticate the request (see just below).</p>
+<p>A sha256 hash of <em>all</em> the fields listed above <em>including</em> your client id, client secret and publishing endpoint. The <code>hash</code> field is used to authenticate the request (see just below).</p>
 
 <h2 class="section">Validating a request</h2>
 
-<p>It's sweet to have a publishing url. But anyone can post to it. Not just Feuilles. So, to make sure you are receiving a valid request from us, you should first check that you have a valid<code>User-Agent</code> header</p>
+<p>It's sweet to have a publishing url. But anyone can post to it. Not just Feuilles. So, to make sure you are receiving a valid request from us, you should first check that you have a valid <code>User-Agent</code> header</p>
 
 <pre><code>
 if ($_SERVER["HTTP_USER_AGENT"] !== "Feuilles In-House") {
@@ -129,7 +149,7 @@ if ( $db->code->exists($unique_code) ) { // The actual db implementation depends
 }
 </code></pre>
 
-<p>You are now ready to move to the most important part of the validation process, which is a OAuth <em>a la</em> Amazon. You are going to put together all the fields received in the request and throw your client id, client secret and publishing endpoint into the mix. You are then going to hash all that and compare the result to the<code>hash</code> field. Your client credentials, more specifically the client secret and publishing endpoint, should be known only by Feuilles and your app. Those “secret” elements, and the changing nature of the other post fields, provide a way of securing your publishing url.</p>
+<p>You are now ready to move to the most important part of the validation process, which is a OAuth <em>a la</em> Amazon. You are going to put together all the fields received in the request and throw your client id, client secret and publishing endpoint into the mix. You are then going to hash all that and compare the result to the <code>hash</code> field. Your client credentials, more specifically the client secret and publishing endpoint, should be known only by Feuilles and your app. Those “secret” elements, and the changing nature of the other post fields, provide a way of securing your publishing url.</p>
 
 <pre><code>
 // Put together the POST fields in that specific order
@@ -156,11 +176,13 @@ if ($hash !== $_POST["hash"]) {
 }
 </code></pre>
 
-<p>From that point on, you can consider that the request is valid and you can proceed with the regular flow of your application (using the title, the body, creating a new document or updating an existing one based on the<code>sha</code> field etc.).</p>
+<p>From that point on, you can consider that the request is valid and you can proceed with the regular flow of your application (using the title, the body, creating a new document or updating an existing one based on the <code>sha</code> field etc.).</p>
 
 <h2 class="section">Response</h2>
 
-<p>If our request reached your publishing endpoint, please always send a <code>200</code> HTTP code, even if something went wrong in the process of, say, validating the request. If Feuilles reaches your endpoint, then the request <em>per se</em> is a success.</p><p>Your publishing endpoint must respond with a JSON string as detailed below.</p><h3>Error</h3><p>To let Feuilles know about an issue, send a JSON encoded string just like this:</p>
+<p>If our request reached your publishing endpoint, please always send a <code>200</code> HTTP code, even if something went wrong in the process of, say, validating the request. If Feuilles reaches your endpoint, then the request <em>per se</em> is a success.</p>
+
+<p>Your publishing endpoint must respond with a JSON string as detailed below.</p><h3>Error</h3><p>To let Feuilles know about an issue, send a JSON encoded string just like this:</p>
 
 <pre><code>
 {"error": "Something went wrong"}
